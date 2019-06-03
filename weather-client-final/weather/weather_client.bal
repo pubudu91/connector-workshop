@@ -11,8 +11,8 @@ public type RefinedClient client object {
         self.apiKey = apiKey;
     }
 
-    public remote function getWeather(string location, TemperatureUnit unit = "kelvin") returns WeatherInfo|error {
-        string url = self.buildURL("/weather", location, unit);
+    public remote function getWeather(string city, TemperatureUnit unit = "kelvin") returns WeatherInfo|error {
+        string url = self.buildURL("/weather", city, unit);
 
         http:Response|error resp = self.weatherEP->get(url);
 
@@ -20,7 +20,15 @@ public type RefinedClient client object {
             json|error payload = resp.getJsonPayload();
 
             if (payload is json) {
-                return WeatherInfo.convert(payload);
+                WeatherInfo|error convPayload = WeatherInfo.convert(payload);
+
+                if (convPayload is WeatherInfo) {
+                    return convPayload;
+                } else {
+                    WeatherClientError err = error("Failed to map the payload to `WeatherInfo`", 
+                                                        {"payload": payload, "cause": convPayload});
+                    return err;
+                }
             } else {
                 return payload;
             }
@@ -29,8 +37,8 @@ public type RefinedClient client object {
         }
     }
 
-    private function buildURL(string res, string location, TemperatureUnit unit) returns string {
-        string url = res + "?q=" + location;
+    private function buildURL(string res, string city, TemperatureUnit unit) returns string {
+        string url = res + "?q=" + city;
 
         if (unit == TEMP_UNIT_KELVIN) {
             // do nothing

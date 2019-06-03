@@ -3,13 +3,16 @@ public const TEMP_UNIT_METRIC = "metric";
 public const TEMP_UNIT_IMPERIAL = "imperial";
 
 public type TemperatureUnit TEMP_UNIT_KELVIN|TEMP_UNIT_METRIC|TEMP_UNIT_IMPERIAL;
+
+public type WeatherClientError error<string, map<anydata|error>>;
+
 public type WeatherInfo record {|
     int id;
     string name;
     Coordinates coord;
     Weather[] weather;
     string base;
-    Main ^"main";
+    Main main;
     Wind wind?;
     Clouds clouds?;
     Rain rain?;
@@ -45,7 +48,7 @@ public type Main record {|
 
 public type Wind record {|
     float speed;
-    int deg;
+    int deg?;
 |};
 
 public type Clouds record {|
