@@ -1,7 +1,6 @@
 import ballerina/http;
 import ballerina/log;
 
-# The Weather Client can be used to retrieve weather data from the OpenWeatherMap API.
 public type Client client object {
 
     private http:Client weatherEP;
@@ -12,7 +11,6 @@ public type Client client object {
         self.apiKey = apiKey;
     }
 
-    // todo: 
     public remote function getWeather(string location, string unit = "kelvin") returns json|error {
         string|error url = self.buildURL("/weather", location, unit);
 
@@ -32,15 +30,15 @@ public type Client client object {
     private function buildURL(string res, string loc, string unit) returns string|error {
         string url = res + "?q=" + loc;
 
-        if (unit == "kelvin") {
-            // do nothing
-        } else if (unit == "metric") {
-            url += "&unit=metric";
-        } else if (unit == "imperial") {
-            url += "&unit=imperial";
-        } else {
-            error e = error("Invalid unit: " + unit);
-            return e;
+        match unit {
+            "kelvin" => {} // do nothing
+            "metric" => url += "&unit=metric";
+            "imperial" => url += "&unit=imperial";
+
+            _ => {
+                error e = error("Invalid unit: " + unit);
+                return e;
+            }
         }
 
         return url + "&appid=" + self.apiKey;
