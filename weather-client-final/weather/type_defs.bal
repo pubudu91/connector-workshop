@@ -4,7 +4,9 @@ public const TEMP_UNIT_IMPERIAL = "imperial";
 
 public type TemperatureUnit TEMP_UNIT_KELVIN|TEMP_UNIT_METRIC|TEMP_UNIT_IMPERIAL;
 
-public type WeatherClientError error<string, map<anydata|error>>;
+public type ErrorReason "Failed to map the payload to `WeatherInfo`";
+
+public type WeatherClientError error<ErrorReason, map<anydata|error>>;
 
 public type WeatherInfo record {|
     int id;
